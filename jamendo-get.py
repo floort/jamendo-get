@@ -34,13 +34,19 @@ while artist_start > -1:
 		album_start = xml.find("<album>", album_end)+7
 		album_end = xml.find("</album>", album_start)
 		album = xml[xml.find("<name>",album_start)+6:xml.find("</name>",album_start)].replace("/", "_")
+		album_id = xml[xml.find("<id>",album_start)+4:xml.find("</id>",album_start)]
 		if not os.path.isdir("download/"+artist+"/"+album):
 			os.mkdir("download/"+artist+"/"+album)
-
-
-
-
-
+		open("download/"+artist+"/"+album+"/cover.jpg","w").write(urllib2.urlopen("http://api.jamendo.com/get2/image/album/redirect/?id=%s&imagesize=600" %(album_id)).read())
+		track_start = album_start
+		track_end = track_start
+		while track_start < album_end:
+			track_start = xml.find("<track>", track_end)+7
+			track_end = xml.find("</track>", track_start)
+			track_id = xml[xml.find("<id>",track_start)+4:xml.find("</id>",track_start)]
+			track_filename = xml[xml.find("<filename>",track_start)+10:xml.find("</filename>",track_start)].replace("/","_")
+			print "download/"+artist+"/"+album+"/"+track_filename+".mp3"
+			open("download/"+artist+"/"+album+"/"+track_filename+".mp3","w").write(urllib2.urlopen("http://api.jamendo.com/get2/stream/track/redirect/?id=%s&streamencoding=mp31" %(track_id)).read())
 
 
 
